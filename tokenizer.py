@@ -5,7 +5,8 @@ import os
 VOCAB_PATH = './vocab.json'
 TRAINING_PATH = './training-data'
 
-def read_training_data(file_path=TRAINING_PATH):
+def read_training_data(file_path):
+    """Reads the content the given training folder path."""
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read().replace("\n", " ")
 
@@ -71,6 +72,8 @@ def train_vocab(iterations):
             
             for _ in range(iterations):
                 most_common_pair = get_most_common_pair(corpus)
+                if not most_common_pair:
+                    break
 
                 corpus = merge_corpus(corpus, most_common_pair[0])
                 vocab[most_common_pair[0]] = most_common_pair[1]
@@ -93,7 +96,10 @@ def tokenize(word):
             subwords.append("<UNKNOWN>")
             break
 
+    print(subwords)
+    print(len(subwords))
     return subwords
 
 if __name__ == "__main__":
-    train_vocab(300)
+    #train_vocab(300)
+    tokenize('Hello World')
