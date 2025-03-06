@@ -1,6 +1,5 @@
 from collections import Counter, defaultdict
 import json
-import wikipedia as wiki
 import os
 
 VOCAB_PATH = './vocab.json'
@@ -64,6 +63,7 @@ def train_vocab(iterations):
     for file in os.listdir(TRAINING_PATH):
         if file.endswith('.txt'):
             text = read_training_data(TRAINING_PATH + '/' + file)
+            print('PROCESSING FILE: ' + file)
 
             corpus = list(text)
             existing_vocab = defaultdict(int, read_vocab())
@@ -90,10 +90,10 @@ def tokenize(word):
                 word = word[i:]
                 break
         else:
-            subwords.append("<UNK>")
+            subwords.append("<UNKNOWN>")
             break
 
     return subwords
 
 if __name__ == "__main__":
-    train_vocab(2)
+    train_vocab(300)
