@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 import json
 import wikipedia as wiki
 import os
@@ -22,13 +22,30 @@ def write_vocab(data, file_path=VOCAB_PATH):
     """Writes vocabulary data to the JSON file in sorted order."""
     try:
         with open(file_path, "w", encoding="utf-8") as file:
-            json.dump(sorted(data, key=len), file, indent=4)
+            json.dump(data, file, indent=4)
     except (TypeError, ValueError) as err:
         raise RuntimeError(f"Failed to write vocabulary: {err}")
 
+def init_vocab(text):
+    '''Creates a dictionary that represents the Count of each Character in the given Text'''
+    char_vocab = defaultdict(int)
+
+    for char in list(text):
+        char_vocab[char] += 1
+
+    return char_vocab
+
+def get_most_common_pair(corpus):
+    pairs = Counter(zip(corpus, corpus[1:]))
+    if not pairs:
+        return None
+    
+    print(pairs.most_common(1))
+    most_common_pair = pairs.most_common(1)[0]
+    return ("".join(most_common_pair[0]), most_common_pair[1])
+
 def merge_corpus(corpus, merged_pair):
     """Merges adjacent tokens in the corpus based on the target pair."""
-    skip = False
     merged_corpus = []
     i = 0
     while i < len(corpus):
@@ -41,15 +58,33 @@ def merge_corpus(corpus, merged_pair):
 
     return merged_corpus
 
+def train_vocab(iterations):
+    for file in os.listdir(TRAINING_PATH):
+        if file.endswith('.txt'):
+            print("PROCESSING: " + file)
+            text = read_training_data(TRAINING_PATH + '/' + file).replace("\n", " ")
+
+            corpus = list(text)
+            existing_vocab = defaultdict(int, read_vocab())
+            vocab = existing_vocab if existing_vocab else init_vocab(text)
+            
+            for _ in range(iterations):
+                most_common_pair = get_most_common_pair(corpus)
+                
+                corpus = merge_corpus(corpus, most_common_pair[0])
+                vocab[most_common_pair[0]] = most_common_pair[1]
+
+            write_vocab(dict(sorted(vocab.items(), key=lambda item: item[1])))
+
 def tokenize(word):
     """Splits a word into known vocabulary tokens."""
-    vocab = set(read_vocab())
+    vocab = defaultdict(int, read_vocab())
     subwords = []
 
     while word:
         for i in range(len(word), 0, -1):
             subword = word[:i]
-            if subword in vocab:
+            if subword in vocab.keys():
                 subwords.append(subword)
                 word = word[i:]
                 break
@@ -59,38 +94,5 @@ def tokenize(word):
 
     return subwords
 
-
-def update_vocab(text, iterations):
-    """Creates or updates vocabulary based on the given text over multiple iterations."""
-    text = text.replace("\n", " ")
-    if read_vocab() == []:
-        vocab = set(text)
-    else:
-        vocab = set(read_vocab())
-
-    corpus = list(text)
-    
-    for _ in range(iterations):
-        pairs = Counter((corpus[i], corpus[i + 1]) for i in range(len(corpus) - 1))
-        if not pairs:
-            break
-        
-        most_common_pair = max(pairs, key=pairs.get)
-        merged_token = "".join(most_common_pair)
-        
-        corpus = merge_corpus(corpus, merged_token)
-        vocab.add(merged_token)
-        write_vocab(list(vocab))
-
-        print(len(corpus))
-
-    
-    return vocab
-
-
 if __name__ == "__main__":
-    for file in os.listdir(TRAINING_PATH):
-        print("PROCESSING: " + file)
-        data = read_training_data(TRAINING_PATH + '/' + file)
-
-        update_vocab(data, 1000)
+    train_vocab(2)
