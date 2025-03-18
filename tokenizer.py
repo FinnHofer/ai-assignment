@@ -95,9 +95,7 @@ def tokenize(word):
         else:
             subwords.append("<UNKNOWN>")
             break
-
-    print(subwords)
-    print(len(subwords))
+        
     return subwords
 
 if __name__ == "__main__":
