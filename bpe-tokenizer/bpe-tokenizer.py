@@ -2,8 +2,8 @@ from collections import Counter, defaultdict
 import json
 import os
 
-VOCAB_PATH = './vocab.json'
-TRAINING_PATH = './training-data'
+VOCAB_PATH = './bpe-tokenizer/output/vocab.json'
+TRAINING_PATH = './bpe-tokenizer/training-data'
 
 def read_training_data(file_path):
     """Reads the content the given training folder path."""
@@ -15,7 +15,8 @@ def read_vocab(file_path=VOCAB_PATH):
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (FileNotFoundError, json.JSONDecodeError) as error:
+        print(error)
         return []
 
 def write_vocab(data, file_path=VOCAB_PATH):
@@ -100,4 +101,4 @@ def tokenize(word):
 
 if __name__ == "__main__":
     #train_vocab(300)
-    tokenize('Hello World')
+    print(tokenize('hello world'))
