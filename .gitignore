@@ -1,1 +1,4 @@
 .DS_Store
+
+*.word2vec.txt
+glove.*d.txt
