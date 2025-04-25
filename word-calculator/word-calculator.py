@@ -59,14 +59,15 @@ def get_word_embedding_bert(word):
     return embedding_matrix[token_id]
 
 def embedding_calc_bert(input_words, additions, subtractions):
-    missing = [word for word in input_words if not get_word_embedding_bert(word)]
-
-    result_vec = np.sum([get_word_embedding_bert(a) for a in additions if get_word_embedding_bert(a)], axis=0)
-    result_vec -= np.sum([get_word_embedding_bert(s) for s in subtractions if get_word_embedding_bert(s)], axis=0)
+    missing = [word for word in input_words if get_word_embedding_bert(word) is None]
 
     if missing:
         print(f"{', '.join(missing)} are not known to the tokenizer")
         return None
+
+
+    result_vec = np.sum([get_word_embedding_bert(a) for a in additions], axis=0)
+    result_vec -= np.sum([get_word_embedding_bert(s) for s in subtractions], axis=0)
 
     return result_vec
 
@@ -95,14 +96,17 @@ def main():
     while user_input != 'exit':
         print('\n---------------------')
         user_input = input('input calculation: ')
+        if user_input == '':
+            continue
+
         input_words, additions, subtractions = format_input(user_input)
 
         glove_result_vec = embedding_calc_glove(glove, input_words, additions, subtractions)
-        if glove_result_vec:
+        if glove_result_vec is not None:
             print('glove= ', get_best_match_glove(glove, glove_result_vec, input_words))
 
         bert_result_vec = embedding_calc_bert(input_words, additions, subtractions)
-        if bert_result_vec:
+        if bert_result_vec is not None:
             print('bert= ', get_best_match_bert(bert_result_vec, input_words))
 
 if __name__ == '__main__':
