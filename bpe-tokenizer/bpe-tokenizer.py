@@ -6,12 +6,10 @@ VOCAB_PATH = './bpe-tokenizer/output/vocab.json'
 TRAINING_PATH = './bpe-tokenizer/training-data'
 
 def read_training_data(file_path):
-    """Reads the content the given training folder path."""
     with open(file_path, "r", encoding="utf-8") as file:
         return file.read().replace("\n", " ")
 
 def read_vocab(file_path=VOCAB_PATH):
-    """Reads the existing vocabulary from the given file path."""
     try:
         with open(file_path, "r", encoding="utf-8") as file:
             return json.load(file)
@@ -20,7 +18,6 @@ def read_vocab(file_path=VOCAB_PATH):
         return []
 
 def write_vocab(data, file_path=VOCAB_PATH):
-    """Writes vocabulary data to the JSON file in sorted order."""
     try:
         with open(file_path, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4)
@@ -28,7 +25,6 @@ def write_vocab(data, file_path=VOCAB_PATH):
         raise RuntimeError(f"Failed to write vocabulary: {err}")
 
 def init_vocab(text):
-    '''Creates a dictionary that represents the Count of each Character in the given Text'''
     char_vocab = defaultdict(int)
 
     for char in list(text):
@@ -37,7 +33,6 @@ def init_vocab(text):
     return char_vocab
 
 def get_most_common_pair(corpus):
-    """Calculate the most common Pair in a given Corpus"""
     pairs = Counter(zip(corpus, corpus[1:]))
     if not pairs:
         return None
@@ -47,7 +42,6 @@ def get_most_common_pair(corpus):
     return ("".join(most_common_pair[0]), most_common_pair[1])
 
 def merge_corpus(corpus, merged_pair):
-    """Merges adjacent tokens in the corpus based on the target pair."""
     merged_corpus = []
     i = 0
     while i < len(corpus):
@@ -61,7 +55,6 @@ def merge_corpus(corpus, merged_pair):
     return merged_corpus
 
 def train_vocab(iterations):
-    """Train the Vocabulary based on the Training-Files"""
     for file in os.listdir(TRAINING_PATH):
         if file.endswith('.txt'):
             text = read_training_data(TRAINING_PATH + '/' + file)
@@ -82,7 +75,6 @@ def train_vocab(iterations):
             write_vocab(dict(sorted(vocab.items(), key=lambda item: item[1])))
 
 def tokenize(word):
-    """Splits a word into known vocabulary tokens."""
     vocab = defaultdict(int, read_vocab())
     subwords = []
 

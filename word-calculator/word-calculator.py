@@ -11,8 +11,7 @@ converted_path = "glove.6B.50d.word2vec.txt"
 
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 model = BertModel.from_pretrained("bert-base-uncased")
-embedding_layer = model.embeddings.word_embeddings
-embedding_matrix = embedding_layer.weight.detach().numpy()
+embedding_matrix = model.embeddings.word_embeddings.weight.detach().numpy()
 
 def load_glove_model(glove_path_txt, converted_path):
     if not os.path.exists(converted_path):
