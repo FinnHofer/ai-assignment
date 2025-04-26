@@ -96,7 +96,7 @@ def main():
     while user_input != 'exit':
         print('\n---------------------')
         user_input = input('input calculation: ')
-        if user_input == '':
+        if user_input == '' or user_input == 'exit':
             continue
 
         input_words, additions, subtractions = format_input(user_input)
