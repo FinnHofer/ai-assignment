@@ -20,3 +20,16 @@ This project uses a set of Python dependencies listed in `requirements.txt`. To 
     pip install -r requirements.txt
     ```
 
+## Execution
+### BPE Tokenizer
+```bash
+cd bpe-tokenizer
+python3 bpe-tokenizer.py
+```
+
+#### Training
+1. Place the training texts as `.txt` files into the `./bpe-tokenizer/training-data` folder.
+2. Uncomment the `train_vocab` function and edit the iterations per file if needed
+
+#### Tokenizing Text
+To tokenize a Text using a vocabulary use the `tokenize` function and pass the text as well as the relative path to the desired vocabulary as funciton parameters
