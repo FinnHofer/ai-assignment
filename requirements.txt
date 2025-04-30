@@ -5,3 +5,4 @@ sentence-transformers
 gensim
 transformers
 numpy
+pathlib

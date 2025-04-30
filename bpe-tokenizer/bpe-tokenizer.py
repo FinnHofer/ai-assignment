@@ -1,11 +1,15 @@
 from collections import Counter, defaultdict
 import json
 import os
+from pathlib import Path
 
-VOCAB_PATH = './output'
-TRAINING_PATH = './training-data'
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
-def read_training_data(file_path):
+VOCAB_PATH = PROJECT_ROOT / 'bpe-tokenizer' / 'vocabularies'
+TRAINING_PATH = PROJECT_ROOT / 'bpe-tokenizer' / 'training-data'
+INPUT_TEXT = PROJECT_ROOT / 'bpe-tokenizer' / 'input-text'
+
+def read_text_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return file.read().replace('\n', ' ')
 
@@ -19,18 +23,18 @@ def read_vocab(file_path=VOCAB_PATH):
 
 def write_vocab(data, file_name='vocab.json', folder_path=VOCAB_PATH):
     try:
-        with open(folder_path+'/'+file_name, 'w', encoding='utf-8') as file:
+        with open(folder_path / file_name, 'w', encoding='utf-8') as file:
             json.dump(data, file, indent=4)
     except (TypeError, ValueError) as err:
         raise RuntimeError(f'Failed to write vocabulary: {err}')
 
 def init_vocab(text):
-    char_vocab = defaultdict(int)
+    vocab = defaultdict(int)
 
     for char in list(text):
-        char_vocab[char] += 1
+       vocab[char] += 1
 
-    return char_vocab
+    return vocab
 
 def get_most_common_pair(corpus):
     pairs = Counter(zip(corpus, corpus[1:]))
@@ -57,7 +61,7 @@ def merge_corpus(corpus, merged_pair):
 def train_vocab(iterations):
     for file in os.listdir(TRAINING_PATH):
         if file.endswith('.txt'):
-            text = read_training_data(TRAINING_PATH + '/' + file)
+            text = read_text_file(TRAINING_PATH / file)
             print('PROCESSING FILE: ' + file)
 
             corpus = list(text)
@@ -74,8 +78,9 @@ def train_vocab(iterations):
             vocab_file_name = file.replace('.txt', '-vocab.json')
             write_vocab(dict(sorted(vocab.items(), key=lambda item: item[1])), vocab_file_name)
 
-def tokenize(text, vocab_path):
-    vocab = defaultdict(int, read_vocab(vocab_path))
+def tokenize(file_name, vocab_name):
+    text = read_text_file(INPUT_TEXT / file_name)
+    vocab = defaultdict(int, read_vocab(VOCAB_PATH / vocab_name))
     subwords = []
 
     while text:
@@ -92,8 +97,4 @@ def tokenize(text, vocab_path):
     return subwords, len(subwords)
 
 if __name__ == '__main__':
-    #train_vocab(600)
-    print(tokenize('Am Abflugtag fahren Herr und Frau Müller mit ihren beiden Kindern im Taxi zum Flughafen. Dort warten schon viele Urlauber. Alle wollen nach Mallorca fliegen. Familie Müller hat viel Gepäck dabei: drei große Koffer und zwei Taschen. Die Taschen sind Handgepäck. Familie Müller nimmt sie mit in das Flugzeug. Am Flugschalter checkt die Familie ein und erhält ihre Bordkarten. Die Angestellte am Flugschalter erklärt Herrn Müller den Weg zum Flugsteig. Es ist nicht mehr viel Zeit bis zum Abflug. Familie Müller geht durch die Sicherheitskontrolle. Als alle das richtige Gate erreichen, setzen sie sich in den Wartebereich. Kurz darauf wird ihre Flugnummer aufgerufen und Familie Müller steigt in das Flugzeug nach Mallorca.', VOCAB_PATH + '/' + 'training-de-vocab.json'))
-    print(tokenize('Am Abflugtag fahren Herr und Frau Müller mit ihren beiden Kindern im Taxi zum Flughafen. Dort warten schon viele Urlauber. Alle wollen nach Mallorca fliegen. Familie Müller hat viel Gepäck dabei: drei große Koffer und zwei Taschen. Die Taschen sind Handgepäck. Familie Müller nimmt sie mit in das Flugzeug. Am Flugschalter checkt die Familie ein und erhält ihre Bordkarten. Die Angestellte am Flugschalter erklärt Herrn Müller den Weg zum Flugsteig. Es ist nicht mehr viel Zeit bis zum Abflug. Familie Müller geht durch die Sicherheitskontrolle. Als alle das richtige Gate erreichen, setzen sie sich in den Wartebereich. Kurz darauf wird ihre Flugnummer aufgerufen und Familie Müller steigt in das Flugzeug nach Mallorca.', VOCAB_PATH + '/' + 'training-de-en-vocab.json'))
-    print(tokenize('I live in a house near the mountains. I have two brothers and one sister, and I was born last. My father teaches mathematics, and my mother is a nurse at a big hospital. My brothers are very smart and work hard in school. My sister is a nervous girl, but she is very kind. My grandmother also lives with us. She came from Italy when I was two years old. She has grown old, but she is still very strong. She cooks the best food! My family is very important to me. We do lots of things together. My brothers and I like to go on long walks in the mountains. My sister likes to cook with my grandmother. On the weekends we all play board games together. We laugh and always have a good time. I love my family very much.', VOCAB_PATH + '/' + 'training-en-vocab.json'))
-    print(tokenize('I live in a house near the mountains. I have two brothers and one sister, and I was born last. My father teaches mathematics, and my mother is a nurse at a big hospital. My brothers are very smart and work hard in school. My sister is a nervous girl, but she is very kind. My grandmother also lives with us. She came from Italy when I was two years old. She has grown old, but she is still very strong. She cooks the best food! My family is very important to me. We do lots of things together. My brothers and I like to go on long walks in the mountains. My sister likes to cook with my grandmother. On the weekends we all play board games together. We laugh and always have a good time. I love my family very much.', VOCAB_PATH + '/' + 'training-de-en-vocab.json'))
+    train_vocab(600)

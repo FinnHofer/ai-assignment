@@ -12,7 +12,7 @@ This project uses a set of Python dependencies listed in `requirements.txt`. To 
 1. **Clone the repository (if applicable):**
 
    ```bash
-   git clone https://github.com/your-username/your-repo.git
+   git clone https://github.com/FinnHofer/ai-assignment.git
    cd your-repo
 
 2. **Install Dependencies**
