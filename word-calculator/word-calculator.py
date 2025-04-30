@@ -65,7 +65,6 @@ def embedding_calc_bert(tokenizer, embeddings, additions, subtractions):
         print(f"{', '.join(missing)} are not known to the Bert tokenizer")
         return None
 
-
     result_vec = np.sum([get_token_embedding_bert(tokenizer, embeddings, a) for a in additions], axis=0)
     result_vec -= np.sum([get_token_embedding_bert(tokenizer, embeddings, s) for s in subtractions], axis=0)
 

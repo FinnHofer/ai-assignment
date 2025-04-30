@@ -33,3 +33,15 @@ python3 bpe-tokenizer.py
 
 #### Tokenizing Text
 To tokenize a Text using a vocabulary use the `tokenize` function and pass the text as well as the relative path to the desired vocabulary as funciton parameters
+
+### Word Calculator
+```bash
+cd word-calculator
+python3 word-calculator.py
+```
+
+For the word calculator to work you have to download the GloVe-Embeddings from the Stanford Website:
+https://nlp.stanford.edu/data/glove.6B.zip
+
+Then you want to extract the zip and move the `glove.6B.50d.txt` in the `./word-calculator folder`.\
+You can choose a bigger Embedding as well. Just update the filename, set in the python script.
