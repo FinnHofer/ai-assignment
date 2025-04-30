@@ -60,6 +60,7 @@ def main():
     text = read_text_file(TEXT_PATH)
     sentences = get_sentences(text)
 
+    print('Loading models...')
     tfidf_matrix = TfidfVectorizer().fit_transform(sentences)
     tfidf_similarity = cosine_similarity(tfidf_matrix)
 
