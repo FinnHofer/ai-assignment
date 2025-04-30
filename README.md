@@ -45,3 +45,14 @@ https://nlp.stanford.edu/data/glove.6B.zip
 
 Then you want to extract the zip and move the `glove.6B.50d.txt` in the `./word-calculator folder`.\
 You can choose a bigger Embedding as well. Just update the filename, set in the python script.
+
+### TextRank
+```bash
+cd textrank
+python3 textrank.py
+```
+
+To extract the most important sentence out of a text using TF-IDF and BERT, paste your text into the `text.txt` file or create your own text file and change the path in the code.
+
+#### Plot with Matplotlib
+To Plot Graphes just uncomment the according `plot_graph` function

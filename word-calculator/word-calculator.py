@@ -5,9 +5,12 @@ import numpy as np
 import re
 from transformers import BertTokenizer, BertModel
 from sklearn.metrics.pairwise import cosine_similarity
+from pathlib import Path
 
-GLOVE_PATH = "glove.6B.50d.txt"
-CONVERTED_PATH = "glove.6B.50d.word2vec.txt"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+GLOVE_PATH = PROJECT_ROOT / 'word-calculator' / 'glove.6B.50d.txt'
+CONVERTED_PATH = PROJECT_ROOT / 'word-calculator' / 'glove.6B.50d.word2vec.txt'
 
 def load_glove_model(glove_path_txt, converted_path):
     if not os.path.exists(converted_path):

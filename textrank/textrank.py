@@ -4,24 +4,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 import networkx as nx
 from sentence_transformers import SentenceTransformer
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-text = """
-Syria: searching for ways to end the violence 
-The Syrian regime is increasingly isolated on the world stage. Interviewed on 7 January, Foreign Minister Guido Westerwelle called for Assad to resign and make way for a democratic fresh start in Syria. 
-On 11 November, the Syrian opposition agreed to set up a new joint body, 
-The deadlock in the United Nations Security Council continues. 
-Foreign Minister Guido Westerwelle has repeatedly called upon China and Russia, both veto powers, to stop backing the Syrian regime. 
-The Security Council has been struggling for months to agree on a united stance in relation to the Syrian regime. 
-Bild: UN Secretary-General Ban Kimoon and Lakhdar Brahimi 
-The conflict in Syria was also a dominant theme during the opening week of the United Nations General Assembly from 25 September to 1 October. 
-Lakhdar Brahimi, the new Joint Special Representative of the Secretary-General and the Arab League, reported on developments to the Security Council. 
-Brahimi took over from Kofi Annan when the latter chose not to extend his mandate. 
-The plan has yet to be implemented. 
-The UN observer mission UNSMIS, which was established to monitor implementation of the Annan plan, also came to an end on 19 August. 
-Opposition platform gains international recognition 
-Bild: Meeting of the Syrian opposition in Doha 
-Syria’s opposition plays an important role in the planning for a peaceful future for the country. 
-"""
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+
+TEXT_PATH = PROJECT_ROOT / 'textrank' / 'text.txt'
+
+def read_text_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return file.read().replace('\n', ' ')
 
 def get_sentences(text):
     sentences = re.split(r'(?<=[.!?])\s+', text.strip())
@@ -31,7 +22,7 @@ def text_rank(sentences, similarities, min_sim=0):
     nx_graph = nx.Graph()
 
     for i, sentence in enumerate(sentences):
-        nx_graph.add_node(i, label=sentence)
+        nx_graph.add_node(i, label=i)
 
     for i in range(len(sentences)):
         for j in range(i + 1, len(sentences)):
@@ -66,10 +57,10 @@ def plot_graph(nx_graph, title):
     plt.show()
 
 def main():
+    text = read_text_file(TEXT_PATH)
     sentences = get_sentences(text)
 
-    tfidf_vectorizer = TfidfVectorizer()
-    tfidf_matrix = tfidf_vectorizer.fit_transform(sentences)
+    tfidf_matrix = TfidfVectorizer().fit_transform(sentences)
     tfidf_similarity = cosine_similarity(tfidf_matrix)
 
     model = SentenceTransformer('bert-base-nli-mean-tokens')
@@ -83,8 +74,8 @@ def main():
     print('TextRank - Embedding')
     nx_graph_embedding = text_rank(sentences, embedding_similarity)
 
-    plot_graph(nx_graph_tfidf, 'TF-IDF - Graph')
-    plot_graph(nx_graph_embedding, 'Embedding - Graph')
+    #plot_graph(nx_graph_tfidf, 'TF-IDF - Graph')
+    #plot_graph(nx_graph_embedding, 'Embedding - Graph')
 
 
 if __name__ == '__main__':
